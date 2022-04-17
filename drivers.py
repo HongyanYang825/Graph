@@ -25,9 +25,6 @@ def check_input(eg_list, lens_list):
                 print("2")
     return ckd_egs, ckd_lens
 
-def check_cycle():
-    pass
-
 def generate_subsets(vertices_set):
     sets_dict, order = {}, len(vertices_set)
     vert_list = list(vertices_set)
@@ -43,11 +40,33 @@ def generate_subsets(vertices_set):
         else:
             sets_dict[key] = [subset]
     return sets_dict
-        
-        
-    
 
-    
+def generate_cycle(vertices_list):
+    adj_list, cycle_set = sorted(vertices_list), set()
+    for i in range(len(adj_list)):
+        if i != len(adj_list) - 1:
+            cycle_set.add(adj_list[i] + adj_list[i + 1])
+        else:
+            cycle_set.add(adj_list[0] + adj_list[i])
+    return cycle_set
+
+def check_cycle(eg_list, vertices_set):
+    eg_set, cycle_dict = set(eg_list), {}
+    vertices_subsets = generate_subsets(vertices_set)
+    if len(vertices_subsets) < 3:
+        return None
+    potential_subsets = {key: vertices_subsets[key]
+                         for key in range(3, len(vertices_subsets))}
+    for key in potential_subsets.keys():
+        for value in potential_subsets[key]:
+            potential_cycle = generate_cycle(value)
+            if potential_cycle.issubset(eg_set):
+                if key in cycle_dict:
+                    cycle_dict[key].append(potential_cycle)
+                else:
+                    cycle_dict[key] = [potential_cycle]
+    return cycle_dict
+
 def to_vertices_set(edges_list):
     vertices = []
     for i in range(len(edges_list)):
