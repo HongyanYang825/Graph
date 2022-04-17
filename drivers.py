@@ -7,6 +7,8 @@
 '''
 
 
+from itertools import permutations
+
 def check_input(eg_list, lens_list):
     if len(eg_list) != len(lens_list):
         raise ValueError("Please input all edges' lengths.")
@@ -41,14 +43,31 @@ def generate_subsets(vertices_set):
             sets_dict[key] = [subset]
     return sets_dict
 
+def sort_edge(cycle_set):
+    sorted_set, eg_list = set(), list(cycle_set)
+    for i in range(len(cycle_set)):
+        temp_list = [each.upper() for each in eg_list[i]]
+        sorted_eg = "".join(sorted(temp_list))
+        sorted_set.add(sorted_eg)
+    return sorted_set
+
 def generate_cycle(vertices_list):
-    adj_list, cycle_set = sorted(vertices_list), set()
-    for i in range(len(adj_list)):
-        if i != len(adj_list) - 1:
-            cycle_set.add(adj_list[i] + adj_list[i + 1])
+    cycle_set = set()
+    for i in range(len(vertices_list)):
+        if i != len(vertices_list) - 1:
+            cycle_set.add(vertices_list[i] + vertices_list[i + 1])
         else:
-            cycle_set.add(adj_list[0] + adj_list[i])
+            cycle_set.add(vertices_list[0] + vertices_list[i])
+    cycle_set = sort_edge(cycle_set)
     return cycle_set
+
+def reduce_duplicate_cycle(vertices_set):
+    unique_cycles = []
+    for each in list(permutations(vertices_set)):
+        cycle_set = generate_cycle(each)
+        if cycle_set not in unique_cycles:
+            unique_cycles.append(cycle_set)
+    return unique_cycles
 
 def check_cycle(eg_list, vertices_set):
     eg_set, cycle_dict = set(eg_list), {}
@@ -59,13 +78,20 @@ def check_cycle(eg_list, vertices_set):
                          for key in range(3, len(vertices_subsets))}
     for key in potential_subsets.keys():
         for value in potential_subsets[key]:
-            potential_cycle = generate_cycle(value)
-            if potential_cycle.issubset(eg_set):
-                if key in cycle_dict:
-                    cycle_dict[key].append(potential_cycle)
-                else:
-                    cycle_dict[key] = [potential_cycle]
+            unique_cycles = reduce_duplicate_cycle(value)
+            for each in unique_cycles:
+                if each.issubset(eg_set):
+                    if key in cycle_dict:
+                        cycle_dict[key].append(each)
+                    else:
+                        cycle_dict[key] = [each]
     return cycle_dict
+
+def all_sequences(seq_list):
+    if len(seq_list) == 0:
+        return []
+    
+    
 
 def to_vertices_set(edges_list):
     vertices = []
