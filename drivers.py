@@ -24,7 +24,6 @@ def check_input(eg_list, lens_list):
                 continue
             else:
                 raise ValueError(f"Conflict lens input for edge {sorted_eg}.")
-                print("2")
     return ckd_egs, ckd_lens
 
 def generate_subsets(vertices_set):
@@ -87,11 +86,56 @@ def check_cycle(eg_list, vertices_set):
                         cycle_dict[key] = [each]
     return cycle_dict
 
-def all_sequences(seq_list):
-    if len(seq_list) == 0:
-        return []
-    
-    
+def generate_path(path_tuple, sequence_tuple):
+    path_of_egs, sequence_list = [], list(sequence_tuple)
+    path_tuple = tuple(sorted(list(path_tuple)))
+    sequence_list.insert(0, path_tuple[0])
+    sequence_list.append(path_tuple[-1])
+    for i in range(len(sequence_list) - 1):
+        temp_list = sorted([sequence_list[i], sequence_list[i + 1]])
+        path_of_egs.append("".join(temp_list))
+    return path_of_egs, set(path_of_egs)
+
+def print_path(path_list):
+    path_route = ""
+    for i in range(len(path_list) - 1):
+        path_route += f"{path_list[i]} --> "
+    path_route += path_list[-1]
+    return path_route
+
+def path_len(path_list, eg_list, lens_list):
+    total_len = 0
+    for each in path_list:
+        total_len += lens_list[eg_list.index(each)]
+    return total_len
+
+def min_index(path_len_list):
+    min_len = min(path_len_list)
+    min_indices = [index for index in range(len(path_len_list))
+                   if path_len_list[index] == min_len]
+    return min_indices, min_len
+
+def shortest_path(path_tuple, eg_list, lens_list):
+    potential_paths, path_lens, shortest_paths = [], [], []
+    path_tuple = tuple([each.upper() for each in path_tuple])
+    vertices_set = to_vertices_set(eg_list)
+    if not set(path_tuple).issubset(vertices_set):
+        raise ValueError("Please input existing vertices.")
+        return None
+    else:
+        seq_set = vertices_set - set(path_tuple)
+        sub_seq_set = generate_subsets(seq_set)
+        for key in sub_seq_set.keys():
+            for value in sub_seq_set[key]:
+                for each in list(permutations(value)):
+                    path = generate_path(path_tuple, each)
+                    if path[1].issubset(set(eg_list)):
+                        potential_paths.append(path[0])
+                        path_lens.append(path_len(path[0],eg_list, lens_list))
+        min_indices, min_len = min_index(path_lens)
+        for each in min_indices:
+            shortest_paths.append(print_path(potential_paths[each]))
+        return shortest_paths, min_len
 
 def to_vertices_set(edges_list):
     vertices = []
