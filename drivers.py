@@ -151,13 +151,16 @@ def connect_indices(edge, edges_list):
            indices.append(i)
     return indices
 
-def append_element(indices_list, from_list, to_list):
+def append_by_index(indices_list, from_list, to_list):
     for index in sorted(indices_list, reverse = True):
         to_append = from_list.pop(index)
         if to_append not in to_list:
             to_list.append(to_append)
     return to_list
-        
-
-        
-
+ 
+def append_by_values(value_list, from_list, to_list):
+    output_list = []
+    for value in value_list:
+        index = from_list.index(value)
+        output_list.append(to_list[index])
+    return output_list
