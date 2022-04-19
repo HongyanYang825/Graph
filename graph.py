@@ -158,9 +158,10 @@ class Graph:
         Method -- cycles
         A method to get graph's all cycles
         Parameters: self -- input Graph instance
-        Returns a dictionary with keys as the sizes of the cycles and
+        Return a dictionary with keys as the sizes of the cycles and
         values as a list of all existing cycles with given size
         '''
+        self.vertices = self.set_vertices()
         return check_cycle(self.edges, self.vertices)
 
     def get_shortest_path(self, path_tuple):
