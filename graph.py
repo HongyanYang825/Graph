@@ -154,4 +154,22 @@ class Graph:
         return self.connected_subgraphs
 
     def cycles(self):
+        '''
+        Method -- cycles
+        A method to get graph's all cycles
+        Parameters: self -- input Graph instance
+        Returns a dictionary with keys as the sizes of the cycles and
+        values as a list of all existing cycles with given size
+        '''
         return check_cycle(self.edges, self.vertices)
+
+    def get_shortest_path(self, path_tuple):
+        '''
+        Method -- get_shortest_path
+        A method to get graph's all shortest paths between two vertices
+        Parameters: self -- input Graph instance
+                    path_tuple (tuple)  -- a tuple consisting start and end
+                                           vertices of the path
+        Return a list consisting all shortest paths, return the shortest length
+        '''
+        return shortest_path(path_tuple, self.edges, self.edge_lens)

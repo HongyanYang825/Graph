@@ -45,6 +45,65 @@ def check_input(eg_list, lens_list):
                 raise ValueError(f"Conflict lens input for edge {sorted_eg}.")
     return ckd_egs, ckd_lens
 
+def to_vertices_set(edges_list):
+    '''
+    Function -- to_vertices_set
+    Extract the vertices given all edges in a graph
+    Parameters: edges_list (list) -- a list of all edges in a graph       
+    Return a set of all vertices in a graph
+    '''
+    vertices = []
+    for i in range(len(edges_list)):
+        vertices.extend(list(edges_list[i]))
+    vertices_set = set(vertices)    # Remove duplicated vertices
+    return vertices_set
+
+def connect_indices(edge, edges_list):
+    '''
+    Function -- connect_indices
+    Find the indices of edges connected to a given edge in a graph
+    Parameters: edge (str)  -- an edge in a graph
+                edges_list (list) -- a list of edges    
+    Return a list of indices of edges connected to a given edge
+    '''
+    indices = []
+    for i in range(len(edges_list)):
+        # Append the index if two edges are connected
+        if not set(edge).isdisjoint(set(edges_list[i])):
+           indices.append(i)
+    return indices
+
+def append_by_index(indices_list, from_list, to_list):
+    '''
+    Function -- append_by_index
+    Append corresponding element to to_list given its index in from_list
+    Parameters: indices_list (list)  -- a list of indices
+                from_list (list) -- a list to get index from
+                to_list (list) -- a list to append corresponding value into      
+    Return a list with corresponding values appended 
+    '''
+    for index in sorted(indices_list, reverse = True):
+        to_append = from_list.pop(index)
+        # Only append unique values to the to_list
+        if to_append not in to_list:
+            to_list.append(to_append)
+    return to_list
+ 
+def append_by_values(value_list, from_list, to_list):
+    '''
+    Function -- append_by_values
+    Append corresponding element to outputlist given its value in to_list 
+    Parameters: value_list (list)  -- a list of values
+                from_list (list) -- a list to get index from
+                to_list (list) -- a list to get value from         
+    Return a list with corresponding values appended
+    '''
+    output_list = []
+    for value in value_list:
+        index = from_list.index(value)
+        output_list.append(to_list[index])
+    return output_list
+
 def generate_subsets(vertices_set):
     '''
     Function -- generate_subsets
@@ -159,34 +218,61 @@ def check_cycle(eg_list, vertices_set):
 
 def generate_path(path_tuple, sequence_tuple):
     '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
+    Function -- generate_path
+    Generate edges on a path given ordered vertices sequence
+    Parameters: path_tuple (tuple)  -- a tuple consisting start and end
+                                       vertices of the path
+                sequence_tuple (tuple) -- a tuple consisting all vetices
+                                          between start and end vertices       
+    Return a list of all edges on the path and a set of these edges
     '''
     path_of_egs, sequence_list = [], list(sequence_tuple)
+    # Sort the start and end vertices given the graph is undirected
     path_tuple = tuple(sorted(list(path_tuple)))
+    # Insert start and end vertices to complete the path
     sequence_list.insert(0, path_tuple[0])
     sequence_list.append(path_tuple[-1])
+    # Generate corresponding edges on the path
     for i in range(len(sequence_list) - 1):
         temp_list = sorted([sequence_list[i], sequence_list[i + 1]])
         path_of_egs.append("".join(temp_list))
     return path_of_egs, set(path_of_egs)
 
+def path_len(path_list, eg_list, lens_list):
+    '''
+    Function -- path_len
+    Calculate the path length given all edges on the path
+    Parameters: path_list (list)  -- a list containing all edges on the path
+                eg_list (list) -- a list of all edges in a graph
+                lens_list (list) -- a list of ordered edge lengths
+    Return a number representing the path length
+    '''
+    total_len = 0
+    # Find edges corresponding lengths with index
+    for each in path_list:
+        total_len += lens_list[eg_list.index(each)]
+    return total_len
+
+def min_index(path_len_list):
+    '''
+    Function -- min_index
+    Find the indices of minimum path length in the list and length value
+    Parameters: path_len_list (list)  -- a list containing all possible paths'
+                                         lengths       
+    Return a list of the indices of minimum length, return length value
+    '''
+    min_len = min(path_len_list)
+    # Traverse and find the indices of minimum path length
+    min_indices = [index for index in range(len(path_len_list))
+                   if path_len_list[index] == min_len]
+    return min_indices, min_len
+
 def print_path(path_list):
     '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
+    Function -- print_path
+    Output the shortest path in a vivid preset format
+    Parameters: path_list (list)  -- a list of shortest paths' edges       
+    Return a string presenting the shortest path in a vivid preset format
     '''
     path_route = ""
     for i in range(len(path_list) - 1):
@@ -194,134 +280,42 @@ def print_path(path_list):
     path_route += path_list[-1]
     return path_route
 
-def path_len(path_list, eg_list, lens_list):
-    '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
-    '''
-    total_len = 0
-    for each in path_list:
-        total_len += lens_list[eg_list.index(each)]
-    return total_len
-
-def min_index(path_len_list):
-    '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
-    '''
-    min_len = min(path_len_list)
-    min_indices = [index for index in range(len(path_len_list))
-                   if path_len_list[index] == min_len]
-    return min_indices, min_len
-
 def shortest_path(path_tuple, eg_list, lens_list):
     '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
+    Function -- shortest_path
+    Find and return the shortest path between two vertices in a given graph
+    Parameters: path_tuple (tuple)  -- a tuple consisting start and end
+                                       vertices of the path
+                eg_list (list) -- a list of all edges in a graph
+                lens_list (list) -- a list of ordered edge lengths 
+    Return a list consisting all shortest paths, return the shortest length
     '''
     potential_paths, path_lens, shortest_paths = [], [], []
+    # Convert the start and end vertices to correct format
     path_tuple = tuple([each.upper() for each in path_tuple])
+    # Extract the vertices given all edges in a graph
     vertices_set = to_vertices_set(eg_list)
     if not set(path_tuple).issubset(vertices_set):
+        # Raise ValueError if the start or end vertices not exist
         raise ValueError("Please input existing vertices.")
-        return None
     else:
         seq_set = vertices_set - set(path_tuple)
+        # Generate all potential vertices between the start and end vertices
         sub_seq_set = generate_subsets(seq_set)
         for key in sub_seq_set.keys():
             for value in sub_seq_set[key]:
+                # Traverse all potential sequences on the path
                 for each in list(permutations(value)):
+                    # Generate all potential edges on the path
                     path = generate_path(path_tuple, each)
+                    # Add path to potential shortest paths only if the edges
+                    # on the path exist in the graph
                     if path[1].issubset(set(eg_list)):
                         potential_paths.append(path[0])
                         path_lens.append(path_len(path[0],eg_list, lens_list))
+        # Find the indices of minimum path length and its value
         min_indices, min_len = min_index(path_lens)
         for each in min_indices:
+            # Output the shortest path in a vivid preset format
             shortest_paths.append(print_path(potential_paths[each]))
         return shortest_paths, min_len
-
-def to_vertices_set(edges_list):
-    '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
-    '''
-    vertices = []
-    for i in range(len(edges_list)):
-        vertices.extend(list(edges_list[i]))
-    vertices_set = set(vertices)
-    return vertices_set
-
-def connect_indices(edge, edges_list):
-    '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
-    '''
-    indices = []
-    for i in range(len(edges_list)):
-        if not set(edge).isdisjoint(set(edges_list[i])):
-           indices.append(i)
-    return indices
-
-def append_by_index(indices_list, from_list, to_list):
-    '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
-    '''
-    for index in sorted(indices_list, reverse = True):
-        to_append = from_list.pop(index)
-        if to_append not in to_list:
-            to_list.append(to_append)
-    return to_list
- 
-def append_by_values(value_list, from_list, to_list):
-    '''
-    Function -- load_window
-    Draw a window at preset position with adjustable side_length
-    Parameters: window (str)  -- current window to load
-                start_point (tuple) -- start position
-                horizontal (float) -- window's horizontal length
-                vertical (float) -- window's vertical length
-                width, color, speed -- default pen information        
-    Draw a window at pre-determined position with specific size
-    '''
-    output_list = []
-    for value in value_list:
-        index = from_list.index(value)
-        output_list.append(to_list[index])
-    return output_list
