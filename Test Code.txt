@@ -1,4 +1,4 @@
 path_tuple = ("A", "G")
 edges = ['AC', 'AD', 'BC', 'BD', 'BE', 'CE', 'EF', 'BF', 'AG']
 edge_lens = [2, 2, 2, 2, 1, 2, 1, 1, 1]
-shortest_paths, min_len = shortest_path(path_tuple, eg_list, lens_list)
+graph = Graph(edges, edge_lens)
