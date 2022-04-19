@@ -7,8 +7,8 @@ User's inputs are:
   # edges = ['AB', 'AC', 'BC', 'DE', 'EF', 'FG', 'DG']
   # edge_lens = [2, 2, 2, 1, 1, 1, 1]
 For example, above is the inputs for a DISCONNECTED graph consisting of 
-  1). Triangle ABC with side length equals 2 and 
-  2). Square DEFG with side length equals 1
+  1). a sub_graph of Triangle ABC with side length equals 2 and 
+  2). a sub_graph of Square DEFG with side length equals 1
   
 The main methods and functions of this package contains four consistent and related parts: 
   1) Check and format user's inputs and report ValueError when the graph cannot be created.
