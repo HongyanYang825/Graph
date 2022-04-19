@@ -4,8 +4,8 @@ User's inputs are:
   1). edges in a specific graph and 
   2). edges' corresponding edge_lens in the form of: 
   
-  1). edges = ['AB', 'AC', 'BC', 'DE', 'EF', 'FG', 'DG']
-  2). edge_lens = [2, 2, 2, 1, 1, 1, 1]
+  # edges = ['AB', 'AC', 'BC', 'DE', 'EF', 'FG', 'DG']
+  # edge_lens = [2, 2, 2, 1, 1, 1, 1]
 For example, above is the inputs for a DISCONNECTED graph consisting of 
   1). Triangle ABC with side length equals 2 and 
   2). Square DEFG with side length equals 1
