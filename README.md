@@ -1,6 +1,9 @@
 This pacakge focuses on creating a Graph instance, which takes user's inputs to deal with topics in the Graph Theory.
 
-User's inputs are: 1). edges in a specific graph and 2). edges' corresponding edge_lens in the form of: 
+User's inputs are: 
+  1). edges in a specific graph and 
+  2). edges' corresponding edge_lens in the form of: 
+  
   1). edges = ['AB', 'AC', 'BC', 'DE', 'EF', 'FG', 'DG']
   2). edge_lens = [2, 2, 2, 1, 1, 1, 1]
 For example, above is the inputs for a DISCONNECTED graph consisting of 
