@@ -27,7 +27,7 @@ class Graph:
         self.edges = ckd_egs
         self.edge_lens = ckd_lens
         self.is_tree = is_tree
-        # Set vertices attibute with get_vertices() method
+        # Set vertices attibute with set_vertices() method
         self.vertices = self.set_vertices()
         self.size = len(self.edges)
         self.order = len(self.vertices)
