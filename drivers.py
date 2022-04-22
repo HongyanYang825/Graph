@@ -22,27 +22,29 @@ def check_input(eg_list, lens_list):
     Return user inputs in correct format. Raise error and return None
     when inputs contains ValueError
     '''
+    for each in lens_list:
+        if each <= 0:
+            raise ValueError("Please input positive edge_lengths.")
     if len(eg_list) != len(lens_list):
         # Raise error when not every input edge has been assigned
         # one and only one edge length
         raise ValueError("Please input all edges' lengths.")
-    else:
-        ckd_egs, ckd_lens = [], []
-        for i in range(len(eg_list)):
-            # Transform input edges to uppercases
-            temp_list = [each.upper() for each in eg_list[i]]
-            # Transform input edges to sorted order
-            sorted_eg = "".join(sorted(temp_list))
-            if sorted_eg not in ckd_egs:
-                ckd_egs.append(sorted_eg)
-                ckd_lens.append(lens_list[i])
-            elif ckd_lens[ckd_egs.index(sorted_eg)] == lens_list[i]:
-                # Remove duplicated input edge length of the same edge
-                continue
-            else:
-                # Raise error when the same edge has been assigned
-                # different edge lengths
-                raise ValueError(f"Conflict lens input for edge {sorted_eg}.")
+    ckd_egs, ckd_lens = [], []
+    for i in range(len(eg_list)):
+        # Transform input edges to uppercases
+        temp_list = [each.upper() for each in eg_list[i]]
+        # Transform input edges to sorted order
+        sorted_eg = "".join(sorted(temp_list))
+        if sorted_eg not in ckd_egs:
+            ckd_egs.append(sorted_eg)
+            ckd_lens.append(lens_list[i])
+        elif ckd_lens[ckd_egs.index(sorted_eg)] == lens_list[i]:
+            # Remove duplicated input edge length of the same edge
+            continue
+        else:
+            # Raise error when the same edge has been assigned
+            # different edge lengths
+            raise ValueError(f"Conflict lens input for edge {sorted_eg}.")
     return ckd_egs, ckd_lens
 
 def to_vertices_set(edges_list):
@@ -216,6 +218,37 @@ def check_cycle(eg_list, vertices_set):
                         cycle_dict[key] = [each]
     return cycle_dict
 
+def cycle_is_exist(lens_list):
+    '''
+    Function -- cycle_is_exist
+    Check if the edge lengths in the lens_list can form a cycle or not
+    Parameters: lens_list (list)  -- a list of edge lengths in given cycle to
+                                     be tested                             
+    Return a Boolean indicates if the cycle can be created or not
+    '''
+    for each in lens_list:
+        # A cycle can be formed iff any side's length is smaller than the sum
+        # of other sides' lengths
+        if each >= sum(lens_list) - each:
+            return False
+    return True
+  
+def test_cycles(cycles_dict, eg_list, lens_list):
+    '''
+    Function -- test_cycles
+    Check if all cycles in a graph can be formed or not
+    Parameters: cycles_dict (dict)  -- a dict of all cycles in the graph
+                eg_list (list)  -- a list of all edges in a graph
+                lens_list (list) -- a list of ordered edge lengths
+    Raise ValueError if any cycle cannot be formed
+    '''
+    for key in cycles_dict:
+        for value in cycles_dict[key]:
+            cycle_lens = append_by_values(list(value), eg_list, lens_list)
+            # Check if the cycle can be formed or not
+            if not cycle_is_exist(cycle_lens):
+                raise ValueError(f"Cycle {value} cannot be formed.")
+
 def generate_path(path_tuple, sequence_tuple):
     '''
     Function -- generate_path
@@ -319,3 +352,97 @@ def shortest_path(path_tuple, eg_list, lens_list):
             # Output the shortest path in a vivid preset format
             shortest_paths.append(print_path(potential_paths[each]))
         return shortest_paths, min_len
+
+def height_of_tree(root, eg_list, vertices_set):
+    lens_list, height_list = [1] * len(eg_list), []
+    descendants = list(vertices_set - set(root))
+    for each in descendants:
+        height_list.append(shortest_path((root, each), eg_list, lens_list)[1])
+    return max(height_list)
+    
+def optimal_root(eg_list, vertices_set):
+    root_dict = {}
+    for each in list(vertices_set):
+        tree_height = height_of_tree(each, eg_list, vertices_set)
+        if tree_height in root_dict:
+            root_dict[tree_height].append(each)
+        else:
+            root_dict[tree_height] = [each]
+    min_height = min(root_dict.keys())
+    return root_dict[min_height], min_height
+
+def tree_node_parent(node, root, eg_list):
+    if node == root:
+        return None
+    lens_list = [1] * len(eg_list)
+    path = shortest_path((node, root), eg_list, lens_list)[0][0]
+    path_list = path.split(" --> ")
+    for each in path_list:
+        if node in set(each):
+            parent = each.replace(node, "")
+            return parent
+
+def tree_node_children(node, root, eg_list):
+    connected_nodes = set()
+    parent = tree_node_parent(node, root, eg_list)
+    if parent is None:
+        parent = root
+    for each in eg_list:
+        if node in set(each):
+            connected_nodes.update(set(each))
+    children = connected_nodes - {node, parent}
+    if len(children) == 0:
+        return None
+    return children
+
+def tree_node_siblings(node, root, eg_list):
+    parent = tree_node_parent(node, root, eg_list)
+    if parent is None:
+        return None
+    children = tree_node_children(parent, root, eg_list)
+    siblings = children - set(node)
+    if len(siblings) == 0:
+        return None
+    return siblings
+
+def parse_path_list(path_list):
+    nodes_list = []
+    for each in path_list:
+        to_list = list(each)
+        for each in to_list:
+            if each not in nodes_list:
+                nodes_list.append(each)
+    return nodes_list
+    
+def tree_node_ancestors(node, root, eg_list):
+    if node == root:
+        return None
+    lens_list = [1] * len(eg_list)
+    path = shortest_path((node, root), eg_list, lens_list)[0][0]
+    path_list = path.split(" --> ")
+    ancestors = parse_path_list(path_list)
+    ancestors.remove(node)
+    if ancestors[0] == root:
+        ancestors.reverse()
+    return ancestors
+
+def tree_node_descendents(node, root, eg_list):
+    descendents, nodes_list = {}, list(to_vertices_set(eg_list))
+    desc_list = [each for each in nodes_list if (each != root and node in
+                 tree_node_ancestors(each, root, eg_list))]
+    if len(desc_list) == 0:
+        return None
+    lens_list = [1] * len(eg_list)
+    for each in desc_list:
+        gen = shortest_path((each, node), eg_list, lens_list)[1]
+        if gen in descendents:
+            descendents[gen].append(each)
+        else:
+            descendents[gen] = [each]
+    return descendents
+    
+def tree_node_neighbors(node, root, eg_list):
+    depth_dict = tree_node_descendents(root, root, eg_list)
+    for each in depth_dict.values():
+        if node in each:
+            return set(each) - set(node)

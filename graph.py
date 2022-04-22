@@ -13,7 +13,7 @@
 from drivers import *
 
 class Graph:
-    def __init__(self, edges, edge_lens, is_tree = False):
+    def __init__(self, edges, edge_lens):
         '''
         Method -- __init__
         Create a new Graph instance by supplying edges and edge_lens
@@ -24,9 +24,8 @@ class Graph:
         Create a new Graph instance and set a bunch of default attributes
         '''
         ckd_egs, ckd_lens = check_input(edges, edge_lens)
-        self.edges = ckd_egs
-        self.edge_lens = ckd_lens
-        self.is_tree = is_tree
+        self.edges, self.edge_lens = ckd_egs, ckd_lens
+        test_cycles(self.get_cycles(), self.edges, self.edge_lens)
         # Set vertices attibute with set_vertices() method
         self.vertices = self.set_vertices()
         self.size = len(self.edges)
@@ -34,6 +33,12 @@ class Graph:
         # List all connected subgraphs as a dictionary
         # given the created Graph instance
         self.connected_subgraphs = self.set_subgraphs()
+        # an undirected graph is tree iff there is no cycle in the graph  
+        # and the graph is connected.
+        if len(self.connected_subgraphs) == 1 and len(self.get_cycles()) == 0:
+            self.is_tree = True
+        else:
+            self.is_tree = False
 
     def set_edges_and_lens(self, edges, edge_lens):
         '''
@@ -46,8 +51,13 @@ class Graph:
         Check and set edges and edge_lens attribute for a Graph instance
         '''
         ckd_egs, ckd_lens = check_input(edges, edge_lens)
-        self.edges = ckd_egs
-        self.edge_lens = ckd_lens
+        self.edges, self.edge_lens = ckd_egs, ckd_lens
+        test_cycles(self.get_cycles(), self.edges, self.edge_lens)
+        if (len(self.get_connected_subgraphs()) == 1 and
+            len(self.get_cycles()) == 0):
+            self.is_tree = True
+        else:
+            self.is_tree = False
 
     def set_vertices(self):
         '''
@@ -153,7 +163,7 @@ class Graph:
         self.connected_subgraphs = self.set_subgraphs()
         return self.connected_subgraphs
 
-    def cycles(self):
+    def get_cycles(self):
         '''
         Method -- cycles
         A method to get graph's all cycles
@@ -174,3 +184,50 @@ class Graph:
         Return a list consisting all shortest paths, return the shortest length
         '''
         return shortest_path(path_tuple, self.edges, self.edge_lens)
+
+class Tree(Graph):
+    def __init__(self, edges, edge_lens, root):
+        self.root = root
+        super().__init__(edges, edge_lens)
+
+    def set_root(self, root):
+        self.root = root
+
+    def get_root(self):
+        return self.root
+
+    def roots_with_min_height(self):
+        self.vertices = self.set_vertices()
+        return optimal_root(self.edges, self.vertices)
+
+    def get_parent(self, node, root = None):
+        if root != None:
+            self.root = root
+        return tree_node_parent(node, self.root, self.edges)
+
+    def get_children(self, node, root = None):
+        if root != None:
+            self.root = root
+        return tree_node_children(node, self.root, self.edges)
+
+    def get_siblings(self, node, root = None):
+        if root != None:
+            self.root = root
+        return tree_node_siblings(node, self.root, self.edges)
+    
+    def get_ancestors(self, node, root = None):
+        if root != None:
+            self.root = root
+        return tree_node_ancestors(node, self.root, self.edges)
+
+    def get_descendents(self, node, root = None):
+        if root != None:
+            self.root = root
+        return tree_node_descendents(node, self.root, self.edges)
+
+    def get_neighbors(self, node, root = None):
+        if root != None:
+            self.root = root
+        return tree_node_neighbors(node, self.root, self.edges)
+        
+        
