@@ -189,6 +189,10 @@ class Tree(Graph):
     def __init__(self, edges, edge_lens, root):
         self.root = root
         super().__init__(edges, edge_lens)
+        self.name_dict = self.get_descendents(self.root)
+        self.seq_dict = self.name_to_seq(self.name_dict)
+        self.link_dict = self.name_to_link(self.seq_dict, root)
+        
 
     def set_root(self, root):
         self.root = root
@@ -200,34 +204,59 @@ class Tree(Graph):
         self.vertices = self.set_vertices()
         return optimal_root(self.edges, self.vertices)
 
-    def get_parent(self, node, root = None):
-        if root != None:
-            self.root = root
+    def get_parent(self, node):
         return tree_node_parent(node, self.root, self.edges)
 
-    def get_children(self, node, root = None):
-        if root != None:
-            self.root = root
+    def get_children(self, node):
         return tree_node_children(node, self.root, self.edges)
 
-    def get_siblings(self, node, root = None):
-        if root != None:
-            self.root = root
+    def get_siblings(self, node):
         return tree_node_siblings(node, self.root, self.edges)
     
-    def get_ancestors(self, node, root = None):
-        if root != None:
-            self.root = root
+    def get_ancestors(self, node):
         return tree_node_ancestors(node, self.root, self.edges)
 
-    def get_descendents(self, node, root = None):
-        if root != None:
-            self.root = root
+    def get_descendents(self, node):
         return tree_node_descendents(node, self.root, self.edges)
 
-    def get_neighbors(self, node, root = None):
-        if root != None:
-            self.root = root
+    def get_neighbors(self, node):
         return tree_node_neighbors(node, self.root, self.edges)
-        
-        
+
+    def name_to_seq(self, name_dict):
+        seq_dict = {1: list(range(len(name_dict[1])))}
+        if len(name_dict) == 1:
+            return seq_dict
+        for key in range(2, len(name_dict) + 1):
+            temp_list = []
+            for value in name_dict[key]:
+                parent = self.get_parent(value)
+                i = seq_dict[key-1][name_dict[key -1].index(parent)]
+                temp_list.append(i)
+            seq_dict[key] = rank_list(temp_list)
+        for key in seq_dict:
+                seq_dict[key] = [name_dict[key][each]
+                                 for each in seq_dict[key]]
+        return seq_dict
+
+    def name_to_link(self, seq_dict, root):
+        link_dict = {1:[]}
+        for key in seq_dict:
+            for value in seq_dict[key]:
+                if key == 1:
+                    link_dict[key].append(root)
+                else:
+                    parent = self.get_parent(value)
+                    i = seq_dict[key -1].index(parent)
+                    if key in link_dict:
+                        link_dict[key].append(i)
+                    else:
+                        link_dict[key] = [i]
+        for key in link_dict:
+            if key == 1:
+                pass
+            else:
+                link_dict[key] = [seq_dict[key - 1][each]
+                                 for each in link_dict[key]]
+        return link_dict
+    
+                

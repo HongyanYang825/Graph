@@ -42,8 +42,8 @@ graph.get_connected_subgraphs()	# Should return two sets of sub_graphs
 edges = ['AC', 'AD', 'BC', 'BD', 'BE', 'CE', 'EF', 'BF', 'AG']
 edge_lens = [2, 2, 2, 2, 1, 2, 1, 1, 1]
 graph.set_edges_and_lens(edges, edge_lens)
-graph.cycles() # Should return a dictionary with key as the size of 
-	       # cycle and value as a list of same-size cycles
+graph.get_cycles() # Should return a dictionary with key as the size of 
+	       	   # cycle and value as a list of same-size cycles
 
 
 
@@ -53,3 +53,12 @@ path_tuple = ("A", "F")
 # Should return a list consisting all shortest paths, 
 # and return the shortest length
 graph.get_shortest_path(path_tuple)
+
+
+edges = ["AC", "BC", "CD", "DF"]
+edges = ["AC", "BC", "CD", "DF", "AG", "GH", "GI", "HJ"]
+edge_lens = [1,2,3,4,5,6,7,8]
+
+{2: ['H', 'D', 'B', 'G'], 1: ['F', 'C'], 3: ['E']}
+{1: ['C', 'F'], 3: ['E'], 2: ['B', 'D', 'G', 'H']}
+seq_dict = {0: ['A'], 1: ['C', 'F'], 2: ['G', 'H', 'B', 'D'], 3: ['E']}

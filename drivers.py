@@ -439,6 +439,7 @@ def tree_node_descendents(node, root, eg_list):
             descendents[gen].append(each)
         else:
             descendents[gen] = [each]
+    [each.sort() for each in descendents.values()]
     return descendents
     
 def tree_node_neighbors(node, root, eg_list):
@@ -446,3 +447,15 @@ def tree_node_neighbors(node, root, eg_list):
     for each in depth_dict.values():
         if node in each:
             return set(each) - set(node)
+
+def parse_tree_depth(desc_dict):
+    height = len(desc_dict) + 1
+    width = max([len(each) for each in desc_dict.values()])
+    return height, width
+    
+def rank_list(in_list):
+    out_list, copy_in, sorted_in = [], in_list[:], sorted(in_list)
+    for each in sorted_in:
+        out_list.append(copy_in.index(each))
+        copy_in[copy_in.index(each)] = None
+    return out_list
