@@ -354,27 +354,58 @@ def shortest_path(path_tuple, eg_list, lens_list):
         return shortest_paths, min_len
 
 def height_of_tree(root, eg_list, vertices_set):
+    '''
+    Function -- height_of_tree
+    Find and return the height of the given tree graph
+    Parameters: root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+                vertices_set (set) -- a set all vertices in the tree
+    Return an int representing the height of the given tree graph
+    
+    '''
     lens_list, height_list = [1] * len(eg_list), []
+    # Create a set of all nodes excluding the root of the tree
     descendants = list(vertices_set - set(root))
+    # Find and record the path length between a given node and root
     for each in descendants:
         height_list.append(shortest_path((root, each), eg_list, lens_list)[1])
     return max(height_list)
     
 def optimal_root(eg_list, vertices_set):
+    '''
+    Function -- optimal_root
+    Find and return the root and height of the tree with min height
+    Parameters: eg_list (list) -- a list of all edges in the tree
+                vertices_set (set) -- a set all vertices in the tree
+    Return a set of all roots provides the min height and the min height
+    
+    '''
     root_dict = {}
     for each in list(vertices_set):
+        # Calculate the tree height given one chosen root
         tree_height = height_of_tree(each, eg_list, vertices_set)
         if tree_height in root_dict:
             root_dict[tree_height].append(each)
         else:
             root_dict[tree_height] = [each]
+    # Find the min height from the min of dict.key()
     min_height = min(root_dict.keys())
     return root_dict[min_height], min_height
 
 def tree_node_parent(node, root, eg_list):
+    '''
+    Function -- tree_node_parent
+    Find and return the parent of one node in the tree
+    Parameters: node (str) -- the node to find the parent of
+                root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+    Return the parent of a given node
+    
+    '''
     if node == root:
-        return None
+        return None # Root has no parent
     lens_list = [1] * len(eg_list)
+    # Find the edge connecting the node and its parent
     path = shortest_path((node, root), eg_list, lens_list)[0][0]
     path_list = path.split(" --> ")
     for each in path_list:
@@ -383,29 +414,57 @@ def tree_node_parent(node, root, eg_list):
             return parent
 
 def tree_node_children(node, root, eg_list):
+    '''
+    Function -- tree_node_children
+    Find and return all the children of one node in the tree
+    Parameters: node (str) -- the node to find the children of
+                root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+    Return all the children of a given node
+    
+    '''
     connected_nodes = set()
     parent = tree_node_parent(node, root, eg_list)
+    # Find all nodes connecting the given node
     if parent is None:
         parent = root
     for each in eg_list:
         if node in set(each):
             connected_nodes.update(set(each))
+    # Find all children of the given node
     children = connected_nodes - {node, parent}
     if len(children) == 0:
-        return None
+        return None # Return None if no children found
     return children
 
 def tree_node_siblings(node, root, eg_list):
+    '''
+    Function -- tree_node_siblings
+    Find and return all the siblings of one node in the tree
+    Parameters: node (str) -- the node to find the siblings of
+                root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+    Return all the siblings of a given node
+    
+    '''
     parent = tree_node_parent(node, root, eg_list)
     if parent is None:
-        return None
+        return None # Root has no sibling
     children = tree_node_children(parent, root, eg_list)
+    # Find all siblings of the given node
     siblings = children - set(node)
     if len(siblings) == 0:
-        return None
+        return None # Return None if no sibling found
     return siblings
 
 def parse_path_list(path_list):
+    '''
+    Function -- parse_path_list
+    Find and return all nodes along a given path in a tree
+    Parameters: path_list (list) -- a list of all edges in one path
+    Return all nodes along a given path in a tree as a list
+    
+    '''
     nodes_list = []
     for each in path_list:
         to_list = list(each)
@@ -415,25 +474,48 @@ def parse_path_list(path_list):
     return nodes_list
     
 def tree_node_ancestors(node, root, eg_list):
+    '''
+    Function -- tree_node_ancestors
+    Find and return all the ancestors of one node in the tree
+    Parameters: node (str) -- the node to find the ancestors of
+                root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+    Return all the ancestors of a given node from leaves to root as a list
+    
+    '''
     if node == root:
-        return None
+        return None # Root has no ancestor
     lens_list = [1] * len(eg_list)
+    # Find the path from the node to root
     path = shortest_path((node, root), eg_list, lens_list)[0][0]
     path_list = path.split(" --> ")
     ancestors = parse_path_list(path_list)
     ancestors.remove(node)
+    # Sort the node list from leaves to root
     if ancestors[0] == root:
         ancestors.reverse()
     return ancestors
 
 def tree_node_descendents(node, root, eg_list):
+    '''
+    Function -- tree_node_descendents
+    Find and return all the descendents of one node in the tree
+    Parameters: node (str) -- the node to find the descendents of
+                root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+    Return all the descendents as a dictionary with key as the genenration
+    and values as a set of same generation descendents
+    
+    '''
     descendents, nodes_list = {}, list(to_vertices_set(eg_list))
+    # Find all descendents of the given node
     desc_list = [each for each in nodes_list if (each != root and node in
                  tree_node_ancestors(each, root, eg_list))]
     if len(desc_list) == 0:
-        return None
+        return None # Return None if no descendent found
     lens_list = [1] * len(eg_list)
     for each in desc_list:
+        # Get the generation of a descendent
         gen = shortest_path((each, node), eg_list, lens_list)[1]
         if gen in descendents:
             descendents[gen].append(each)
@@ -443,17 +525,29 @@ def tree_node_descendents(node, root, eg_list):
     return descendents
     
 def tree_node_neighbors(node, root, eg_list):
+    '''
+    Function -- tree_node_neighbors
+    Find and return all the neighbors of one node in the tree
+    Parameters: node (str) -- the node to find the neighbors of
+                root (str)  -- root of the given tree
+                eg_list (list) -- a list of all edges in the tree
+    Return all the neighbors of a given node as a set
+    
+    '''
+    # Find all nodes at a given depth of the tree as a dict
     depth_dict = tree_node_descendents(root, root, eg_list)
     for each in depth_dict.values():
         if node in each:
             return set(each) - set(node)
-
-def parse_tree_depth(desc_dict):
-    height = len(desc_dict) + 1
-    width = max([len(each) for each in desc_dict.values()])
-    return height, width
     
 def rank_list(in_list):
+    '''
+    Function -- rank_list
+    Find and return the rank of all elements in in_list
+    Parameters: in_list (list) -- a list that contains duplicated elements
+    Return the rank of all elements of in_list as a list
+    
+    '''
     out_list, copy_in, sorted_in = [], in_list[:], sorted(in_list)
     for each in sorted_in:
         out_list.append(copy_in.index(each))

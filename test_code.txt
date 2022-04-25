@@ -56,9 +56,25 @@ graph.get_shortest_path(path_tuple)
 
 
 edges = ["AC", "BC", "CD", "DF"]
-edges = ["AC", "BC", "CD", "DF", "AG", "GH", "GI", "HJ"]
-edge_lens = [1,2,3,4,5,6,7,8]
 
-{2: ['H', 'D', 'B', 'G'], 1: ['F', 'C'], 3: ['E']}
-{1: ['C', 'F'], 3: ['E'], 2: ['B', 'D', 'G', 'H']}
-seq_dict = {0: ['A'], 1: ['C', 'F'], 2: ['G', 'H', 'B', 'D'], 3: ['E']}
+
+edges = ["AC", "CG", "CH", "AF", "BF", "DF", "DE"]
+edge_lens = [1,2,3,4,5,6,7]
+tree = Tree(edges, edge_lens, "A")
+tree.plot_tree()
+tree.get_root()
+'F'
+tree.get_parent("G")
+'C'
+tree.get_children("F")
+{'A', 'B', 'D'}
+tree.get_siblings("A")
+{'B', 'D'}
+tree.get_neighbors("C")
+{'E'}
+tree.set_root("A")
+tree.plot_tree()
+tree.get_ancestors("E")
+['D', 'F', 'A']
+tree.get_descendents("A")
+{3: ['E'], 1: ['C', 'F'], 2: ['B', 'D', 'G', 'H']}

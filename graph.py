@@ -6,11 +6,15 @@
     Define and implement a Graph class to conduct graph operations
     based on the Graph Theory
 
+    Define and implement a Tree subclass to conduct tree operations
+    and plot the given tree object
+
     Hongyan Yang
 '''
 
 
 from drivers import *
+from plot_drivers import *
 
 class Graph:
     def __init__(self, edges, edge_lens):
@@ -20,7 +24,6 @@ class Graph:
         for all edges in a graph with edge lenths set accordingly
         Parameters: edges (list) -- a list of all edges in a graph
                     edge_lens (list) -- a list of ordered edge lengths
-                    is_tree (bool) -- a boolean indicates if it is a tree
         Create a new Graph instance and set a bunch of default attributes
         '''
         ckd_egs, ckd_lens = check_input(edges, edge_lens)
@@ -36,9 +39,9 @@ class Graph:
         # an undirected graph is tree iff there is no cycle in the graph  
         # and the graph is connected.
         if len(self.connected_subgraphs) == 1 and len(self.get_cycles()) == 0:
-            self.is_tree = True
+            self.is_a_tree = True
         else:
-            self.is_tree = False
+            self.is_a_tree = False
 
     def set_edges_and_lens(self, edges, edge_lens):
         '''
@@ -55,9 +58,9 @@ class Graph:
         test_cycles(self.get_cycles(), self.edges, self.edge_lens)
         if (len(self.get_connected_subgraphs()) == 1 and
             len(self.get_cycles()) == 0):
-            self.is_tree = True
+            self.is_a_tree = True
         else:
-            self.is_tree = False
+            self.is_a_tree = False
 
     def set_vertices(self):
         '''
@@ -103,6 +106,15 @@ class Graph:
             dict[i][1].extend(sub_lens)
             i += 1
         return dict
+
+    def is_tree(self):
+        '''
+        Method -- is_tree
+        Check if the graph is a tree or not
+        Parameters: self -- input Graph instance
+        Return is_a_tree attribute of a Graph instance
+        '''
+        return self.is_a_tree
 
     def get_edges(self):
         '''
@@ -187,42 +199,124 @@ class Graph:
 
 class Tree(Graph):
     def __init__(self, edges, edge_lens, root):
+        '''
+        Method -- __init__
+        Create a new Tree instance by supplying edges, edge_lens and root
+        Parameters: edges (list) -- a list of all edges in a tree
+                    edge_lens (list) -- a list of ordered edge lengths
+                    root (str) -- tree's root, which can be changed later
+        Create a new Graph instance and set a bunch of default attributes
+        '''
         self.root = root
+        # the Tree subclass inherits _init_ method from the Graph class
         super().__init__(edges, edge_lens)
         self.name_dict = self.get_descendents(self.root)
         self.seq_dict = self.name_to_seq(self.name_dict)
         self.link_dict = self.name_to_link(self.seq_dict, root)
-        
+        self.seq_dict[0] = [self.root]
 
     def set_root(self, root):
+        '''
+        Method -- set_root
+        A set method to set tree's root
+        Parameters: self -- input Tree instance
+                    root (str) -- tree's root
+        Set root attribute for a Tree instance
+        '''
         self.root = root
+        self.name_dict = self.get_descendents(self.root)
+        self.seq_dict = self.name_to_seq(self.name_dict)
+        self.link_dict = self.name_to_link(self.seq_dict, root)
+        self.seq_dict[0] = [self.root]
 
     def get_root(self):
+        '''
+        Method -- get_root
+        A get method to get tree's root
+        Parameters: self -- input Tree instance
+        Return the root attribute of a Tree instance
+        '''
         return self.root
 
     def roots_with_min_height(self):
+        '''
+        Method -- roots_with_min_height
+        Find and return all roots that create the tree with min height
+        Parameters: self -- input Tree instance
+        Return a set of roots provide min height
+        '''
         self.vertices = self.set_vertices()
         return optimal_root(self.edges, self.vertices)
 
     def get_parent(self, node):
+        '''
+        Method -- get_parent
+        Find and return the parent of one node in the tree
+        Parameters: self -- input Tree instance
+                    node (str) -- the node to find the parent of
+        Return the parent of a given node
+        '''
         return tree_node_parent(node, self.root, self.edges)
 
     def get_children(self, node):
+        '''
+        Method -- get_children
+        Find and return all the children of one node in the tree
+        Parameters: self -- input Tree instance
+                    node (str) -- the node to find the children of
+        Return all the children of a given node
+        '''
         return tree_node_children(node, self.root, self.edges)
 
     def get_siblings(self, node):
+        '''
+        Method -- get_siblings
+        Find and return all the siblings of one node in the tree
+        Parameters: self -- input Tree instance
+                    node (str) -- the node to find the siblings of
+        Return all the siblings of a given node
+        '''
         return tree_node_siblings(node, self.root, self.edges)
     
     def get_ancestors(self, node):
+        '''
+        Method -- get_ancestors
+        Find and return all the ancestors of one node in the tree
+        Parameters: self -- input Tree instance
+                    node (str) -- the node to find the ancestors of
+        Return all the ancestors of a given node from leaves to root as a list
+        '''
         return tree_node_ancestors(node, self.root, self.edges)
 
     def get_descendents(self, node):
+        '''
+        Method -- get_descendents
+        Find and return all the descendents of one node in the tree
+        Parameters: self -- input Tree instance
+                    node (str) -- the node to find the descendents of
+        Return all the descendents as a dictionary with key as the genenration
+        and values as a set of same generation descendents
+        '''
         return tree_node_descendents(node, self.root, self.edges)
 
     def get_neighbors(self, node):
+        '''
+        Method -- get_neighbors
+        Find and return all the neighbors of one node in the tree
+        Parameters: self -- input Tree instance
+                    node (str) -- the node to find the neighbors of
+        Return all the neighbors of a given node as a set
+        '''
         return tree_node_neighbors(node, self.root, self.edges)
 
     def name_to_seq(self, name_dict):
+        '''
+        Method -- name_to_seq
+        Find the sequence of all nodes at a given depth of the tree
+        Parameters: self -- input Tree instance
+                    name_dict (dict) -- a dict of all nodes at a given depth
+        Return a dict records the sequence of nodes at every depth
+        '''
         seq_dict = {1: list(range(len(name_dict[1])))}
         if len(name_dict) == 1:
             return seq_dict
@@ -239,6 +333,14 @@ class Tree(Graph):
         return seq_dict
 
     def name_to_link(self, seq_dict, root):
+        '''
+        Method -- name_to_link
+        Find the sequence of all nodes' parents at a given depth of the tree
+        Parameters: self -- input Tree instance
+                    seq_dict (dict) -- a dict records the sequence
+                    root (str) -- tree's root
+        Return a dict records nodes' parents at every depth
+        '''
         link_dict = {1:[]}
         for key in seq_dict:
             for value in seq_dict[key]:
@@ -259,4 +361,12 @@ class Tree(Graph):
                                  for each in link_dict[key]]
         return link_dict
     
-                
+    def plot_tree(self):
+        '''
+        Method -- plot_tree
+        Plot the given tree
+        Parameters: self -- input Tree instance
+        Plot the tree given the current root
+        '''
+        return draw_tree(self.seq_dict, self.link_dict, self.edges,
+                         self.edge_lens, width = 800, height = 800)
