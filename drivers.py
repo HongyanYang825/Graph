@@ -390,7 +390,7 @@ def optimal_root(eg_list, vertices_set):
             root_dict[tree_height] = [each]
     # Find the min height from the min of dict.key()
     min_height = min(root_dict.keys())
-    return root_dict[min_height], min_height
+    return set(root_dict[min_height]), min_height
 
 def tree_node_parent(node, root, eg_list):
     '''

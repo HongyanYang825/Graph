@@ -299,7 +299,7 @@ class Tree(Graph):
         '''
         return tree_node_descendents(node, self.root, self.edges)
 
-    def get_neighbors(self, node):
+    def get_same_level_nodes(self, node):
         '''
         Method -- get_neighbors
         Find and return all the neighbors of one node in the tree

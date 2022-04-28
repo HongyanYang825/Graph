@@ -143,11 +143,11 @@ class Graph_Test(unittest.TestCase):
        tree = Tree(edges, edge_lens, "A")
        self.assertEqual(tree.get_siblings("G"), {'H'})  
        
-    def test_get_neighbors(self):
+    def test_get_same_level_nodes(self):
        edges = ["AC", "CG", "CH", "AF", "BF", "DF", "DE"]
        edge_lens = [1,2,3,4,5,6,7]
        tree = Tree(edges, edge_lens, "A")
-       self.assertEqual(tree.get_neighbors("G"), {'H', 'B', 'D'})  
+       self.assertEqual(tree.get_same_level_nodes("G"), {'H', 'B', 'D'})  
        
     def test_get_ancestors(self):
        edges = ["AC", "CG", "CH", "AF", "BF", "DF", "DE"]
@@ -167,7 +167,7 @@ class Graph_Test(unittest.TestCase):
        edges = ["AC", "CG", "CH", "AF", "BF", "DF", "DE"]
        edge_lens = [1,2,3,4,5,6,7]
        tree = Tree(edges, edge_lens, "A")
-       self.assertEqual(tree.roots_with_min_height(), (['A', 'F'], 3))
+       self.assertEqual(tree.roots_with_min_height(), ({'A', 'F'}, 3))
 
 def main():
     unittest.main(verbosity = 3)
