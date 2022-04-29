@@ -14,7 +14,7 @@ It can be used in daily application of graph theory topics such as finding the s
 It solves problems including: 
 * 1). Test user’s inputs.
 * 2). Check connectivity of graph. 
-* 3).Find all unique cycles in a graph. 
+* 3). Find all unique cycles in a graph. 
 * 4). Find the shortest path between two input vertices.
 * 5). Check if the input graph or any subgraph is a tree. 
 
@@ -26,28 +26,32 @@ If the graph is a tree. Problems that can be solved are:
 
 ## Structure
 ```Shell
-├── Darray
-    ├── Darray
+├── DS5010_Project
+    ├── Graph
         ├── __init__.py
-        ├── utils.py
-        ├── darray.py
-           ├── self.data
-           ├── self.colnames
-           ├── __init__()
-           ├── __str__()
-           ├── __getitem__()
-           ├── __setitem__()
-           ├── __add__() etc...
-           ├── order()
-           ├── deletena() etc...
-           ├── concat_rows() etc...
-           ├── summary()
-           ├── ...
-           
+        ├── drivers.py
+        ├── plot_drivers.py
+        ├── graph.py
+           ├── class Graph
+              ├── __init__()
+              ├── set_edges_and_lens()
+              ├── set_vertices()
+              ├── set_subgraphs() etc...
+              ├── is_tree()
+              ├── get_connected_subgraphs()
+              ├── get_cycles() 
+              ├── get_shortest_path()
+           ├── class Tree(Graph)
+              ├── __init__()
+              ├── set_root() etc...
+              ├── roots_with_min_height()
+              ├── get_parent() etc...
+              ├── get_same_level_nodes()
+              ├── plot_tree()
     ├── README.md   
     ├── setup.py
-    ├── test.csv
     ├── test.py
+    ├── LICENSE
 ```
 ## Install
 ```
@@ -107,6 +111,11 @@ tree.roots_with_min_height() # Should return {'A', 'F'}
 tree.set_root("A")
 tree.plot_tree()
 ```
+
+```md
+<img src="Assets/Picture1.png"/>
+```
+
 ## Help
 
 Any advise for common problems or issues.
