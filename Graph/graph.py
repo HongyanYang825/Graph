@@ -13,8 +13,8 @@
 '''
 
 
-from drivers import *
-from plot_drivers import *
+from Graph.drivers import *
+from Graph.plot_drivers import *
 
 class Graph:
     def __init__(self, edges, edge_lens):
