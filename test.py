@@ -25,7 +25,7 @@
 
 
 import unittest
-from graph import *
+from Graph.graph import *
  
 class Graph_Test(unittest.TestCase):
     def test_bad_init_1(self):
