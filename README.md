@@ -112,9 +112,9 @@ tree.set_root("A")
 tree.plot_tree()
 ```
 
-```md
-<img src="Assets/Picture1.png"/>
-```
+
+<img src="Assets/Picture2.png"/>
+
 
 ## Help
 
