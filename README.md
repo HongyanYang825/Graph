@@ -56,7 +56,7 @@ If the graph is a tree. Problems that can be solved are:
 ## Install
 ```
 git clone https://github.com/HongyanYang825/DS5010_Project
-cd Graph/
+cd DS5010_Project/
 python setup.py install
 ```
 ## Usage
